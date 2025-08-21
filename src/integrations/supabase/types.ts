@@ -14,7 +14,354 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      client_documents: {
+        Row: {
+          approved_date: string | null
+          client_id: string
+          created_at: string | null
+          due_date: string | null
+          file_url: string | null
+          id: string
+          name: string
+          notes: string | null
+          received_date: string | null
+          status: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          approved_date?: string | null
+          client_id: string
+          created_at?: string | null
+          due_date?: string | null
+          file_url?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          received_date?: string | null
+          status?: string
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          approved_date?: string | null
+          client_id?: string
+          created_at?: string | null
+          due_date?: string | null
+          file_url?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          received_date?: string | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          corretor_id: string
+          cpf: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          corretor_id: string
+          cpf?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          corretor_id?: string
+          cpf?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_corretor_id_fkey"
+            columns: ["corretor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_analysis: {
+        Row: {
+          avg_price: number | null
+          avg_time_on_market: number | null
+          created_at: string | null
+          id: string
+          period_end: string
+          period_start: string
+          price_change_percent: number | null
+          property_type: string
+          region: string
+          total_sales: number | null
+        }
+        Insert: {
+          avg_price?: number | null
+          avg_time_on_market?: number | null
+          created_at?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          price_change_percent?: number | null
+          property_type: string
+          region: string
+          total_sales?: number | null
+        }
+        Update: {
+          avg_price?: number | null
+          avg_time_on_market?: number | null
+          created_at?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          price_change_percent?: number | null
+          property_type?: string
+          region?: string
+          total_sales?: number | null
+        }
+        Relationships: []
+      }
+      performance_metrics: {
+        Row: {
+          avg_closing_time: number | null
+          conversions_count: number | null
+          corretor_id: string
+          created_at: string | null
+          id: string
+          leads_count: number | null
+          month_year: string
+          most_sold_product_type: string | null
+          total_sales: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_closing_time?: number | null
+          conversions_count?: number | null
+          corretor_id: string
+          created_at?: string | null
+          id?: string
+          leads_count?: number | null
+          month_year: string
+          most_sold_product_type?: string | null
+          total_sales?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_closing_time?: number | null
+          conversions_count?: number | null
+          corretor_id?: string
+          created_at?: string | null
+          id?: string
+          leads_count?: number | null
+          month_year?: string
+          most_sold_product_type?: string | null
+          total_sales?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performance_metrics_corretor_id_fkey"
+            columns: ["corretor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          area: number | null
+          bathrooms: number | null
+          bedrooms: number | null
+          corretor_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          images: string[] | null
+          location: string | null
+          price: number | null
+          status: string
+          title: string
+          type: string
+          updated_at: string | null
+          videos: string[] | null
+        }
+        Insert: {
+          area?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          corretor_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          price?: number | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string | null
+          videos?: string[] | null
+        }
+        Update: {
+          area?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          corretor_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          location?: string | null
+          price?: number | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          videos?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_corretor_id_fkey"
+            columns: ["corretor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          role: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          role: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sales: {
+        Row: {
+          client_id: string
+          closed_at: string | null
+          commission: number | null
+          corretor_id: string
+          created_at: string | null
+          id: string
+          product_id: string | null
+          status: string
+          updated_at: string | null
+          value: number
+        }
+        Insert: {
+          client_id: string
+          closed_at?: string | null
+          commission?: number | null
+          corretor_id: string
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          status?: string
+          updated_at?: string | null
+          value: number
+        }
+        Update: {
+          client_id?: string
+          closed_at?: string | null
+          commission?: number | null
+          corretor_id?: string
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          status?: string
+          updated_at?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_corretor_id_fkey"
+            columns: ["corretor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
