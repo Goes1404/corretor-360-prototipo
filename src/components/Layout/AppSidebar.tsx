@@ -29,7 +29,7 @@ const menuItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "CRM Inteligente", url: "/crm", icon: Users },
   { title: "Simuladores", url: "/simuladores", icon: Calculator },
-  { title: "Documentos", url: "/documentos", icon: FileText },
+  { title: "Produtos", url: "/produtos", icon: FileText },
   { title: "Recomendações IA", url: "/recomendacoes", icon: Lightbulb },
   { title: "Análise de Mercado", url: "/analise-mercado", icon: TrendingUp },
 ];
