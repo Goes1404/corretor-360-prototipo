@@ -10,6 +10,7 @@ import { ArrowLeft, Mail, Send, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useActivityLogger } from "@/hooks/useActivityLogger";
 
 interface Client {
   id: string;
@@ -31,6 +32,7 @@ const EnviarEmail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile } = useAuth();
+  const { logActivity } = useActivityLogger();
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>("");
   const [selectedClientData, setSelectedClientData] = useState<Client | null>(null);
@@ -141,6 +143,13 @@ const EnviarEmail = () => {
         .eq('id', selectedClient);
 
       if (error) throw error;
+
+      // Registrar atividade
+      await logActivity(
+        selectedClient,
+        'email',
+        `E-mail enviado para ${selectedClientData.name}: ${subject}`
+      );
 
       toast({
         title: "E-mail enviado!",

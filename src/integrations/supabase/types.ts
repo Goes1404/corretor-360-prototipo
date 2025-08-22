@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          client_id: string
+          created_at: string
+          data_hora: string
+          descricao: string
+          id: string
+          tipo_atividade: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          data_hora?: string
+          descricao: string
+          id?: string
+          tipo_atividade: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          data_hora?: string
+          descricao?: string
+          id?: string
+          tipo_atividade?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_documents: {
         Row: {
           approved_date: string | null
@@ -79,6 +127,7 @@ export type Database = {
           phone: string | null
           source: string | null
           status: string
+          status_negociacao: string | null
           updated_at: string | null
         }
         Insert: {
@@ -92,6 +141,7 @@ export type Database = {
           phone?: string | null
           source?: string | null
           status?: string
+          status_negociacao?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -105,6 +155,7 @@ export type Database = {
           phone?: string | null
           source?: string | null
           status?: string
+          status_negociacao?: string | null
           updated_at?: string | null
         }
         Relationships: [

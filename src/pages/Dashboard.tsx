@@ -1,7 +1,8 @@
 import { Users, TrendingUp, FileText, Target, Clock, DollarSign } from "lucide-react";
 import { KPICard } from "@/components/Dashboard/KPICard";
 import { QuickActions } from "@/components/Dashboard/QuickActions";
-import { RecentActivities } from "@/components/Dashboard/RecentActivities";
+import { SalesFunnel } from "@/components/Dashboard/SalesFunnel";
+import { RealTimeActivities } from "@/components/Dashboard/RealTimeActivities";
 
 const Dashboard = () => {
   return (
@@ -75,32 +76,7 @@ const Dashboard = () => {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sales Funnel */}
-        <div className="card-elevated p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Funil de Vendas</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border-l-4 border-primary">
-              <div>
-                <p className="font-medium text-foreground">Leads Qualificados</p>
-                <p className="text-sm text-foreground-muted">156 contatos</p>
-              </div>
-              <span className="text-2xl font-bold text-primary">156</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-warning/5 border-l-4 border-warning">
-              <div>
-                <p className="font-medium text-foreground">Em Negociação</p>
-                <p className="text-sm text-foreground-muted">89 propostas</p>
-              </div>
-              <span className="text-2xl font-bold text-warning-foreground">89</span>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-success/5 border-l-4 border-success">
-              <div>
-                <p className="font-medium text-foreground">Fechados</p>
-                <p className="text-sm text-foreground-muted">34 vendas</p>
-              </div>
-              <span className="text-2xl font-bold text-success">34</span>
-            </div>
-          </div>
-        </div>
+        <SalesFunnel />
 
         {/* Goals Progress */}
         <div className="card-elevated p-6">
@@ -143,7 +119,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activities */}
-      <RecentActivities />
+      <RealTimeActivities />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { ArrowLeft, Phone, MessageSquare, Mail, User, Clock, Copy } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useActivityLogger } from "@/hooks/useActivityLogger";
 
 interface Client {
   id: string;
@@ -23,6 +24,7 @@ const FazerLigacao = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile } = useAuth();
+  const { logActivity } = useActivityLogger();
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<string>("");
   const [selectedClientData, setSelectedClientData] = useState<Client | null>(null);
@@ -114,6 +116,13 @@ const FazerLigacao = () => {
         .eq('id', selectedClient);
 
       if (error) throw error;
+
+      // Registrar atividade
+      await logActivity(
+        selectedClient,
+        'ligacao',
+        `Ligação realizada para ${selectedClientData?.name}: ${callNotes.substring(0, 100)}${callNotes.length > 100 ? '...' : ''}`
+      );
 
       toast({
         title: "Observações salvas!",

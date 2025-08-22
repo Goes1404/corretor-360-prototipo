@@ -10,11 +10,13 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useActivityLogger } from "@/hooks/useActivityLogger";
 
 const NovoLead = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile } = useAuth();
+  const { logActivity } = useActivityLogger();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -35,19 +37,29 @@ const NovoLead = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase
+      const { data: newClient, error } = await supabase
         .from('clients')
         .insert({
           name: formData.name || 'Lead sem nome',
           email: formData.email || null,
           phone: formData.phone || null,
           status: formData.status,
+          status_negociacao: 'novo_lead',
           notes: formData.notes || null,
           corretor_id: profile.id,
           source: 'CADASTRO_MANUAL'
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Registrar atividade
+      await logActivity(
+        newClient.id,
+        'novo_lead',
+        `Novo lead cadastrado: ${formData.name || 'Lead sem nome'}`
+      );
 
       toast({
         title: "Lead cadastrado!",
