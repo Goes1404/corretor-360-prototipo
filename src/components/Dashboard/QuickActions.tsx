@@ -1,31 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Plus, Upload, Phone, Mail } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function QuickActions() {
+  const navigate = useNavigate();
+  
   const actions = [
     {
       label: "Novo Lead",
       icon: Plus,
       variant: "default" as const,
-      description: "Cadastrar prospect"
+      description: "Cadastrar prospect",
+      onClick: () => navigate("/novo-lead")
     },
     {
       label: "Upload Docs",
       icon: Upload,
       variant: "outline" as const,
-      description: "Enviar documentos"
+      description: "Enviar documentos",
+      onClick: () => navigate("/upload-documentos")
     },
     {
       label: "Fazer Ligação",
       icon: Phone,
       variant: "outline" as const,
-      description: "Contato direto"
+      description: "Contato direto",
+      onClick: () => navigate("/fazer-ligacao")
     },
     {
       label: "Enviar E-mail",
       icon: Mail,
       variant: "outline" as const,
-      description: "Marketing direto"
+      description: "Marketing direto",
+      onClick: () => navigate("/enviar-email")
     },
   ];
 
@@ -38,6 +45,7 @@ export function QuickActions() {
             key={action.label}
             variant={action.variant}
             className="flex-col h-auto py-4 gap-2"
+            onClick={action.onClick}
           >
             <action.icon className="w-5 h-5" />
             <div className="text-center">

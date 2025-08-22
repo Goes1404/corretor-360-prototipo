@@ -16,6 +16,10 @@ import Auth from "./pages/Auth";
 import GestorDashboard from "./pages/GestorDashboard";
 import Produtos from "./pages/Produtos";
 import ClienteDetalhes from "./pages/ClienteDetalhes";
+import NovoLead from "./pages/NovoLead";
+import UploadDocumentos from "./pages/UploadDocumentos";
+import FazerLigacao from "./pages/FazerLigacao";
+import EnviarEmail from "./pages/EnviarEmail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +54,10 @@ const AppRoutes = () => {
         } />
         <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
         <Route path="/clientes/:clientId" element={<ProtectedRoute><ClienteDetalhes /></ProtectedRoute>} />
+        <Route path="/novo-lead" element={<ProtectedRoute><NovoLead /></ProtectedRoute>} />
+        <Route path="/upload-documentos" element={<ProtectedRoute><UploadDocumentos /></ProtectedRoute>} />
+        <Route path="/fazer-ligacao" element={<ProtectedRoute><FazerLigacao /></ProtectedRoute>} />
+        <Route path="/enviar-email" element={<ProtectedRoute><EnviarEmail /></ProtectedRoute>} />
         <Route path="/simuladores" element={<ProtectedRoute><Simuladores /></ProtectedRoute>} />
         <Route path="/documentos" element={<ProtectedRoute><Documentos /></ProtectedRoute>} />
         <Route path="/produtos" element={<ProtectedRoute><Produtos /></ProtectedRoute>} />

@@ -1,0 +1,219 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+
+const NovoLead = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { profile } = useAuth();
+  const [loading, setLoading] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    status: "PROSPECTO" as const,
+    monthly_income: "",
+    profession: "",
+    desired_property_type: "",
+    interest_location: "",
+    notes: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .insert({
+          name: formData.name || 'Lead sem nome',
+          email: formData.email || null,
+          phone: formData.phone || null,
+          status: formData.status,
+          notes: formData.notes || null,
+          corretor_id: profile.id,
+          source: 'CADASTRO_MANUAL'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Lead cadastrado!",
+        description: "O novo lead foi adicionado com sucesso.",
+      });
+      
+      navigate("/crm");
+    } catch (error) {
+      console.error('Erro ao cadastrar lead:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível cadastrar o lead. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="animate-fade-in space-y-6">
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(-1)}
+          className="gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Novo Lead</h1>
+          <p className="text-foreground-muted mt-1">Cadastre um novo prospect</p>
+        </div>
+      </div>
+
+      <Card className="max-w-4xl">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Save className="w-5 h-5" />
+            Informações do Lead
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Nome completo"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="email@exemplo.com"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefone</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select 
+                  value={formData.status} 
+                  onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PROSPECTO">Potencial</SelectItem>
+                    <SelectItem value="QUALIFICADO">Frio</SelectItem>
+                    <SelectItem value="INTERESSADO">Quente</SelectItem>
+                    <SelectItem value="NEGOCIACAO">Fechado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="monthly_income">Renda Mensal Estimada</Label>
+                <Input
+                  id="monthly_income"
+                  value={formData.monthly_income}
+                  onChange={(e) => setFormData({ ...formData, monthly_income: e.target.value })}
+                  placeholder="R$ 5.000,00"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="profession">Profissão</Label>
+                <Input
+                  id="profession"
+                  value={formData.profession}
+                  onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
+                  placeholder="Ex: Engenheiro, Médico, Advogado"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="desired_property_type">Tipo de Imóvel Desejado</Label>
+                <Input
+                  id="desired_property_type"
+                  value={formData.desired_property_type}
+                  onChange={(e) => setFormData({ ...formData, desired_property_type: e.target.value })}
+                  placeholder="Ex: Apartamento, Casa, Comercial"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="interest_location">Localização de Interesse</Label>
+                <Input
+                  id="interest_location"
+                  value={formData.interest_location}
+                  onChange={(e) => setFormData({ ...formData, interest_location: e.target.value })}
+                  placeholder="Ex: Centro, Zona Sul, Bairro específico"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="notes">Observações Gerais</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Informações adicionais sobre o lead..."
+                className="min-h-[100px]"
+              />
+            </div>
+            
+            <div className="flex gap-4 pt-6">
+              <Button type="submit" disabled={loading} className="gap-2">
+                <Save className="w-4 h-4" />
+                {loading ? "Salvando..." : "Salvar Lead"}
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => navigate(-1)}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default NovoLead;
