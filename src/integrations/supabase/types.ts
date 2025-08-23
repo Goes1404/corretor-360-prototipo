@@ -62,6 +62,45 @@ export type Database = {
           },
         ]
       }
+      appointments: {
+        Row: {
+          client_id: string
+          corretor_id: string
+          created_at: string
+          date_time: string
+          id: string
+          location: string | null
+          notes: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          corretor_id: string
+          created_at?: string
+          date_time: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          corretor_id?: string
+          created_at?: string
+          date_time?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       client_documents: {
         Row: {
           approved_date: string | null
@@ -120,10 +159,13 @@ export type Database = {
           corretor_id: string
           cpf: string | null
           created_at: string | null
+          desqualificado: boolean | null
           email: string | null
           id: string
+          motivo_desqualificacao: string | null
           name: string
           notes: string | null
+          observacoes_desqualificacao: string | null
           phone: string | null
           qualificado: boolean | null
           source: string | null
@@ -135,10 +177,13 @@ export type Database = {
           corretor_id: string
           cpf?: string | null
           created_at?: string | null
+          desqualificado?: boolean | null
           email?: string | null
           id?: string
+          motivo_desqualificacao?: string | null
           name: string
           notes?: string | null
+          observacoes_desqualificacao?: string | null
           phone?: string | null
           qualificado?: boolean | null
           source?: string | null
@@ -150,10 +195,13 @@ export type Database = {
           corretor_id?: string
           cpf?: string | null
           created_at?: string | null
+          desqualificado?: boolean | null
           email?: string | null
           id?: string
+          motivo_desqualificacao?: string | null
           name?: string
           notes?: string | null
+          observacoes_desqualificacao?: string | null
           phone?: string | null
           qualificado?: boolean | null
           source?: string | null
