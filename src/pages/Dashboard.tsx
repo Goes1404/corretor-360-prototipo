@@ -3,6 +3,7 @@ import { KPICard } from "@/components/Dashboard/KPICard";
 import { QuickActions } from "@/components/Dashboard/QuickActions";
 import { SalesFunnel } from "@/components/Dashboard/SalesFunnel";
 import { RealTimeActivities } from "@/components/Dashboard/RealTimeActivities";
+import { LeadsTable } from "@/components/CRM/LeadsTable";
 
 const Dashboard = () => {
   return (
@@ -120,6 +121,12 @@ const Dashboard = () => {
 
       {/* Recent Activities */}
       <RealTimeActivities />
+
+      {/* Recent Leads */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-foreground">Leads Recentes</h3>
+        <LeadsTable showStats={false} />
+      </div>
     </div>
   );
 };

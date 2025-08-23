@@ -125,6 +125,7 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          qualificado: boolean | null
           source: string | null
           status: string
           status_negociacao: string | null
@@ -139,6 +140,7 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          qualificado?: boolean | null
           source?: string | null
           status?: string
           status_negociacao?: string | null
@@ -153,6 +155,7 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          qualificado?: boolean | null
           source?: string | null
           status?: string
           status_negociacao?: string | null
