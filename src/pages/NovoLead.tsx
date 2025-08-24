@@ -33,6 +33,39 @@ const NovoLead = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Verificar duplicidade antes de cadastrar
+    if (formData.email || formData.phone) {
+      try {
+        let duplicateQuery = supabase
+          .from('clients')
+          .select('id, name, email, phone');
+
+        if (formData.email && formData.phone) {
+          duplicateQuery = duplicateQuery.or(`email.eq.${formData.email},phone.eq.${formData.phone}`);
+        } else if (formData.email) {
+          duplicateQuery = duplicateQuery.eq('email', formData.email);
+        } else if (formData.phone) {
+          duplicateQuery = duplicateQuery.eq('phone', formData.phone);
+        }
+
+        const { data: duplicates, error: duplicateError } = await duplicateQuery;
+
+        if (duplicateError) {
+          console.error('Erro ao verificar duplicidade:', duplicateError);
+        } else if (duplicates && duplicates.length > 0) {
+          const duplicate = duplicates[0];
+          toast({
+            title: "Lead já cadastrado",
+            description: `Já existe um lead com estes dados: ${duplicate.name}`,
+            variant: "destructive"
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Erro ao verificar duplicidade:', error);
+      }
+    }
     if (!profile) return;
 
     setLoading(true);

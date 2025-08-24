@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppLayout } from "./components/Layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import CRM from "./pages/CRM";
+import Calendario from "./pages/Calendario";
 import Simuladores from "./pages/Simuladores";
 import Documentos from "./pages/Documentos";
 import Recomendacoes from "./pages/Recomendacoes";
@@ -53,6 +54,7 @@ const AppRoutes = () => {
           profile?.role === 'GESTOR' ? <GestorDashboard /> : <Dashboard />
         } />
         <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
+        <Route path="/calendario" element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
         <Route path="/clientes/:clientId" element={<ProtectedRoute><ClienteDetalhes /></ProtectedRoute>} />
         <Route path="/novo-lead" element={<ProtectedRoute><NovoLead /></ProtectedRoute>} />
         <Route path="/upload-documentos" element={<ProtectedRoute><UploadDocumentos /></ProtectedRoute>} />

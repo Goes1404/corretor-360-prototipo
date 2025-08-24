@@ -9,7 +9,8 @@ import {
   TrendingUp,
   Menu,
   X,
-  Home
+  Home,
+  Calendar
 } from "lucide-react";
 
 import {
@@ -28,6 +29,7 @@ import {
 const menuItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "CRM Inteligente", url: "/crm", icon: Users },
+  { title: "Calendário", url: "/calendario", icon: Calendar },
   { title: "Simuladores", url: "/simuladores", icon: Calculator },
   { title: "Produtos", url: "/produtos", icon: FileText },
   { title: "Recomendações IA", url: "/recomendacoes", icon: Lightbulb },

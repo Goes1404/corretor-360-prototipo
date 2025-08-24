@@ -14,6 +14,9 @@ export interface Lead {
   source?: string;
   notes?: string;
   qualificado: boolean;
+  desqualificado?: boolean;
+  motivo_desqualificacao?: string;
+  observacoes_desqualificacao?: string;
   created_at: string;
   updated_at: string;
   corretor_id: string;
@@ -112,6 +115,86 @@ export const useLeads = () => {
       toast({
         title: "Erro",
         description: "Não foi possível excluir o lead",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const disqualifyLead = async (leadId: string, motivo: string, observacoes?: string) => {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ 
+          desqualificado: true,
+          motivo_desqualificacao: motivo,
+          observacoes_desqualificacao: observacoes
+        })
+        .eq('id', leadId);
+
+      if (error) throw error;
+
+      // Registrar atividade
+      await logActivity(leadId, 'desqualificacao', `Lead desqualificado: ${motivo}`);
+
+      // Atualizar estado local
+      setLeads(prev => prev.map(lead => 
+        lead.id === leadId ? { 
+          ...lead, 
+          desqualificado: true,
+          motivo_desqualificacao: motivo,
+          observacoes_desqualificacao: observacoes
+        } : lead
+      ));
+
+      toast({
+        title: "Sucesso",
+        description: "Lead desqualificado com sucesso"
+      });
+    } catch (error) {
+      console.error('Erro ao desqualificar lead:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível desqualificar o lead",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const requalifyLead = async (leadId: string) => {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ 
+          desqualificado: false,
+          motivo_desqualificacao: null,
+          observacoes_desqualificacao: null
+        })
+        .eq('id', leadId);
+
+      if (error) throw error;
+
+      // Registrar atividade
+      await logActivity(leadId, 'requalificacao', 'Lead requalificado');
+
+      // Atualizar estado local
+      setLeads(prev => prev.map(lead => 
+        lead.id === leadId ? { 
+          ...lead, 
+          desqualificado: false,
+          motivo_desqualificacao: undefined,
+          observacoes_desqualificacao: undefined
+        } : lead
+      ));
+
+      toast({
+        title: "Sucesso",
+        description: "Lead requalificado com sucesso"
+      });
+    } catch (error) {
+      console.error('Erro ao requalificar lead:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível requalificar o lead",
         variant: "destructive"
       });
     }
@@ -224,6 +307,8 @@ export const useLeads = () => {
     setFilter,
     qualifyLead,
     deleteLead,
+    disqualifyLead,
+    requalifyLead,
     makePhoneCall,
     sendEmail,
     refreshLeads: fetchLeads
