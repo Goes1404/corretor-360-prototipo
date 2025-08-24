@@ -195,113 +195,122 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
               </p>
             </div>
           ) : (
-            <div className="grid gap-4">
-              {leads.map((lead) => (
-                <Card key={lead.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold text-foreground">{lead.name}</h3>
-                          
-                          {lead.qualificado && !lead.desqualificado && (
-                            <Badge className="bg-green-500 text-white">
-                              <Star className="w-3 h-3 mr-1" />
-                              Qualificado
-                            </Badge>
-                          )}
-                          
-                          {lead.desqualificado && (
-                            <Badge className="bg-red-500 text-white">
-                              <UserX className="w-3 h-3 mr-1" />
-                              Desqualificado
-                            </Badge>
-                          )}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Nome</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Email</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Telefone</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Status</th>
+                    <th className="text-left py-3 px-4 font-medium text-foreground">Qualificação</th>
+                    <th className="text-right py-3 px-4 font-medium text-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leads.map((lead) => (
+                    <tr key={lead.id} className="border-b border-border hover:bg-muted/50">
+                      <td className="py-3 px-4">
+                        <div className="font-medium text-foreground">{lead.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
                         </div>
-                        
-                        <div className="space-y-1">
-                          <p className="text-sm text-foreground-muted">{lead.email}</p>
-                          <p className="text-sm text-foreground-muted">{lead.phone}</p>
-                          
-                          <Badge className={`${getStatusColor(lead.status_negociacao)} text-white`}>
-                            {getStatusLabel(lead.status_negociacao)}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-foreground-muted">{lead.email}</td>
+                      <td className="py-3 px-4 text-sm text-foreground-muted">{lead.phone}</td>
+                      <td className="py-3 px-4">
+                        <Badge className={`${getStatusColor(lead.status_negociacao)} text-white`}>
+                          {getStatusLabel(lead.status_negociacao)}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4">
+                        {lead.qualificado && !lead.desqualificado && (
+                          <Badge className="bg-green-500 text-white">
+                            <Star className="w-3 h-3 mr-1" />
+                            Qualificado
                           </Badge>
-                        </div>
-                        
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Criado em {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => makePhoneCall(lead.id, lead.phone || '')}
-                          disabled={!lead.phone}
-                        >
-                          <Phone className="w-4 h-4" />
-                        </Button>
-                        
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => sendEmail(lead.id, lead.email || '', 'Contato', 'Olá!')}
-                          disabled={!lead.email}
-                        >
-                          <Mail className="w-4 h-4" />
-                        </Button>
-                        
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="outline">
-                              <MoreVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            {!lead.qualificado && !lead.desqualificado && (
-                              <DropdownMenuItem onClick={() => qualifyLead(lead.id)}>
-                                <Star className="w-4 h-4 mr-2" />
-                                Qualificar Lead
+                        )}
+                        {lead.desqualificado && (
+                          <Badge className="bg-red-500 text-white">
+                            <UserX className="w-3 h-3 mr-1" />
+                            Desqualificado
+                          </Badge>
+                        )}
+                        {!lead.qualificado && !lead.desqualificado && (
+                          <Badge variant="secondary">Pendente</Badge>
+                        )}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => makePhoneCall(lead.id, lead.phone || '')}
+                            disabled={!lead.phone}
+                          >
+                            <Phone className="w-4 h-4" />
+                          </Button>
+                          
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => sendEmail(lead.id, lead.email || '', 'Contato', 'Olá!')}
+                            disabled={!lead.email}
+                          >
+                            <Mail className="w-4 h-4" />
+                          </Button>
+                          
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="outline">
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              {!lead.qualificado && !lead.desqualificado && (
+                                <DropdownMenuItem onClick={() => qualifyLead(lead.id)}>
+                                  <Star className="w-4 h-4 mr-2" />
+                                  Qualificar Lead
+                                </DropdownMenuItem>
+                              )}
+                              
+                              <DropdownMenuItem onClick={() => setAppointmentModal(lead.id)}>
+                                <Calendar className="w-4 h-4 mr-2" />
+                                Agendar Atendimento
                               </DropdownMenuItem>
-                            )}
-                            
-                            <DropdownMenuItem onClick={() => setAppointmentModal(lead.id)}>
-                              <Calendar className="w-4 h-4 mr-2" />
-                              Agendar Atendimento
-                            </DropdownMenuItem>
-                            
-                            <DropdownMenuSeparator />
-                            
-                            {lead.desqualificado ? (
-                              <DropdownMenuItem onClick={() => handleRequalifyLead(lead.id)}>
-                                <RotateCcw className="w-4 h-4 mr-2" />
-                                Requalificar Lead
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem 
-                                onClick={() => setDisqualifyModal({leadId: lead.id, leadName: lead.name})}
+                              
+                              <DropdownMenuSeparator />
+                              
+                              {lead.desqualificado ? (
+                                <DropdownMenuItem onClick={() => handleRequalifyLead(lead.id)}>
+                                  <RotateCcw className="w-4 h-4 mr-2" />
+                                  Requalificar Lead
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem 
+                                  onClick={() => setDisqualifyModal({leadId: lead.id, leadName: lead.name})}
+                                >
+                                  <UserX className="w-4 h-4 mr-2" />
+                                  Desqualificar Lead
+                                </DropdownMenuItem>
+                              )}
+                              
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() => setDeleteConfirm(lead.id)}
                               >
-                                <UserX className="w-4 h-4 mr-2" />
-                                Desqualificar Lead
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Excluir Lead
                               </DropdownMenuItem>
-                            )}
-                            
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() => setDeleteConfirm(lead.id)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Excluir Lead
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

@@ -8,6 +8,7 @@ import { useAppointments } from "@/hooks/useAppointments";
 import { format, isSameDay, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppointmentModal } from "@/components/Calendar/AppointmentModal";
+import { DayPicker } from "react-day-picker";
 
 const Calendario = () => {
   const { appointments, loading } = useAppointments();
@@ -18,6 +19,9 @@ const Calendario = () => {
   const appointmentsForSelectedDate = appointments.filter(apt => 
     isSameDay(parseISO(apt.date_time), selectedDate)
   );
+
+  // Dias com agendamentos para destacar no calendário
+  const appointmentDates = appointments.map(apt => parseISO(apt.date_time));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -81,6 +85,16 @@ const Calendario = () => {
               onSelect={(date) => date && setSelectedDate(date)}
               locale={ptBR}
               className="rounded-md border w-full pointer-events-auto"
+              modifiers={{
+                hasAppointment: appointmentDates
+              }}
+              modifiersStyles={{
+                hasAppointment: { 
+                  backgroundColor: 'hsl(var(--primary))', 
+                  color: 'white',
+                  borderRadius: '4px'
+                }
+              }}
             />
           </CardContent>
         </Card>
