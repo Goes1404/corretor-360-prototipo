@@ -56,43 +56,44 @@ const Calendario = () => {
   }
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="animate-fade-in space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Calendário de Atendimentos</h1>
-          <p className="text-foreground-muted mt-1">Gerencie seus agendamentos e compromissos</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Calendário de Atendimentos</h1>
+          <p className="text-foreground-muted mt-1 text-sm sm:text-base">Gerencie seus agendamentos e compromissos</p>
         </div>
-        <Button className="gap-2" onClick={() => setShowModal(true)}>
+        <Button className="gap-2 w-full sm:w-auto" onClick={() => setShowModal(true)}>
           <Plus className="w-4 h-4" />
-          Novo Atendimento
+          <span className="sm:inline">Novo Atendimento</span>
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Calendar */}
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <CalendarIcon className="w-5 h-5" />
               Calendário
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6">
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={(date) => date && setSelectedDate(date)}
               locale={ptBR}
-              className="rounded-md border w-full pointer-events-auto"
+              className="rounded-md border w-full pointer-events-auto mx-auto"
               modifiers={{
                 hasAppointment: appointmentDates
               }}
               modifiersStyles={{
                 hasAppointment: { 
-                  backgroundColor: 'hsl(var(--primary))', 
+                  backgroundColor: 'hsl(120, 60%, 50%)', 
                   color: 'white',
-                  borderRadius: '4px'
+                  borderRadius: '4px',
+                  fontWeight: 'bold'
                 }
               }}
             />
@@ -102,15 +103,17 @@ const Calendario = () => {
         {/* Appointments List */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Users className="w-5 h-5" />
-              Atendimentos - {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
+              <span className="truncate">
+                Atendimentos - {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
+              </span>
             </CardTitle>
             <CardDescription>
               {appointmentsForSelectedDate.length} compromisso(s) para esta data
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4">
             {appointmentsForSelectedDate.length === 0 ? (
               <div className="text-center py-12">
                 <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
@@ -126,7 +129,7 @@ const Calendario = () => {
                   className="cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => handleEditAppointment(appointment)}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">

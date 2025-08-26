@@ -55,15 +55,15 @@ export function AppSidebar() {
       className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} bg-card border-r border-border`}
       collapsible="icon"
     >
-      <SidebarContent className="p-4">
+      <SidebarContent className="p-3 sm:p-4">
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-            <BarChart3 className="w-6 h-6 text-primary-foreground" />
+        <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+            <BarChart3 className="w-4 h-4 sm:w-6 sm:h-6 text-primary-foreground" />
           </div>
           {!isCollapsed && (
-            <div>
-              <h1 className="text-xl font-bold text-primary">Corretor360</h1>
+            <div className="hidden sm:block">
+              <h1 className="text-lg sm:text-xl font-bold text-primary">Corretor360</h1>
               <p className="text-xs text-foreground-muted">Sua central de vendas</p>
             </div>
           )}
@@ -83,9 +83,9 @@ export function AppSidebar() {
                       className={getNavClasses(item.url)}
                       title={isCollapsed ? item.title : undefined}
                     >
-                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      <item.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                       {!isCollapsed && (
-                        <span className="font-medium">{item.title}</span>
+                        <span className="font-medium text-sm sm:text-base">{item.title}</span>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -97,14 +97,14 @@ export function AppSidebar() {
 
         {/* User Section */}
         {!isCollapsed && (
-          <div className="mt-auto pt-4 border-t border-border">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary-foreground">JD</span>
+          <div className="mt-auto pt-3 sm:pt-4 border-t border-border hidden sm:block">
+            <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-secondary">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-full flex items-center justify-center">
+                <span className="text-xs sm:text-sm font-semibold text-primary-foreground">JD</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">João Silva</p>
-                <p className="text-xs text-foreground-muted">Corretor Senior</p>
+                <p className="text-xs sm:text-sm font-medium text-foreground truncate">João Silva</p>
+                <p className="text-xs text-foreground-muted truncate">Corretor Senior</p>
               </div>
             </div>
           </div>
