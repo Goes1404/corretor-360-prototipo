@@ -54,6 +54,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "activities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_manager_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "activities_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -150,6 +157,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_manager_view"
             referencedColumns: ["id"]
           },
         ]
@@ -449,6 +463,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_manager_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "sales_corretor_id_fkey"
             columns: ["corretor_id"]
             isOneToOne: false
@@ -466,10 +487,77 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      clients_manager_view: {
+        Row: {
+          corretor_id: string | null
+          cpf: string | null
+          created_at: string | null
+          desqualificado: boolean | null
+          email: string | null
+          id: string | null
+          motivo_desqualificacao: string | null
+          name: string | null
+          notes: string | null
+          observacoes_desqualificacao: string | null
+          phone: string | null
+          qualificado: boolean | null
+          source: string | null
+          status: string | null
+          status_negociacao: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          corretor_id?: string | null
+          cpf?: never
+          created_at?: string | null
+          desqualificado?: boolean | null
+          email?: never
+          id?: string | null
+          motivo_desqualificacao?: string | null
+          name?: string | null
+          notes?: never
+          observacoes_desqualificacao?: string | null
+          phone?: never
+          qualificado?: boolean | null
+          source?: string | null
+          status?: string | null
+          status_negociacao?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          corretor_id?: string | null
+          cpf?: never
+          created_at?: string | null
+          desqualificado?: boolean | null
+          email?: never
+          id?: string | null
+          motivo_desqualificacao?: string | null
+          name?: string | null
+          notes?: never
+          observacoes_desqualificacao?: string | null
+          phone?: never
+          qualificado?: boolean | null
+          source?: string | null
+          status?: string | null
+          status_negociacao?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_corretor_id_fkey"
+            columns: ["corretor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
