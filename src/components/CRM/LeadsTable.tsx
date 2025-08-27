@@ -23,13 +23,15 @@ import {
   Target,
   Calendar,
   UserX,
-  RotateCcw
+  RotateCcw,
+  CheckCircle2
 } from "lucide-react";
 import { useLeads } from "@/hooks/useLeads";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DisqualifyModal } from "./DisqualifyModal";
 import { AppointmentModal } from "@/components/Calendar/AppointmentModal";
+import { FinalizeSaleModal } from "./FinalizeSaleModal";
 
 interface LeadsTableProps {
   showStats?: boolean;
@@ -52,6 +54,7 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [disqualifyModal, setDisqualifyModal] = useState<{leadId: string, leadName: string} | null>(null);
   const [appointmentModal, setAppointmentModal] = useState<string | null>(null);
+  const [finalizeSaleModal, setFinalizeSaleModal] = useState<{leadId: string, leadName: string} | null>(null);
 
   const handleDeleteLead = (leadId: string) => {
     deleteLead(leadId);
@@ -82,7 +85,9 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
       case 'contato_realizado': return 'bg-yellow-500';
       case 'visita_agendada': return 'bg-purple-500';
       case 'proposta_enviada': return 'bg-orange-500';
+      case 'em_negociacao': return 'bg-indigo-500';
       case 'contrato_assinado': return 'bg-green-500';
+      case 'venda_concluida': return 'bg-emerald-600';
       default: return 'bg-gray-500';
     }
   };
@@ -93,7 +98,9 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
       case 'contato_realizado': return 'Contato Realizado';
       case 'visita_agendada': return 'Visita Agendada';
       case 'proposta_enviada': return 'Proposta Enviada';
+      case 'em_negociacao': return 'Em Negociação';
       case 'contrato_assinado': return 'Contrato Assinado';
+      case 'venda_concluida': return 'Venda Concluída';
       default: return status;
     }
   };
@@ -306,6 +313,17 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
                                 Agendar Atendimento
                               </DropdownMenuItem>
                               
+                              {/* Mostrar "Finalizar Venda" apenas para leads em negociação ou proposta enviada */}
+                              {(lead.status_negociacao === 'em_negociacao' || lead.status_negociacao === 'proposta_enviada') && (
+                                <DropdownMenuItem 
+                                  onClick={() => setFinalizeSaleModal({leadId: lead.id, leadName: lead.name})}
+                                  className="text-success"
+                                >
+                                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                                  Finalizar Venda
+                                </DropdownMenuItem>
+                              )}
+                              
                               <DropdownMenuSeparator />
                               
                               {lead.desqualificado ? (
@@ -377,6 +395,14 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
         isOpen={!!appointmentModal}
         onClose={() => setAppointmentModal(null)}
         preSelectedClientId={appointmentModal || undefined}
+      />
+
+      <FinalizeSaleModal
+        isOpen={!!finalizeSaleModal}
+        onClose={() => setFinalizeSaleModal(null)}
+        leadId={finalizeSaleModal?.leadId || ''}
+        leadName={finalizeSaleModal?.leadName || ''}
+        onSuccess={() => window.location.reload()}
       />
     </div>
   );
