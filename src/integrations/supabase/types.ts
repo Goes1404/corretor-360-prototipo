@@ -506,45 +506,6 @@ export type Database = {
           },
         ]
       }
-      sales_finalized: {
-        Row: {
-          client_id: string
-          completion_date: string
-          contract_url: string | null
-          corretor_id: string
-          created_at: string
-          id: string
-          notes: string | null
-          product_name: string
-          sale_value: number
-          updated_at: string
-        }
-        Insert: {
-          client_id: string
-          completion_date: string
-          contract_url?: string | null
-          corretor_id: string
-          created_at?: string
-          id?: string
-          notes?: string | null
-          product_name: string
-          sale_value: number
-          updated_at?: string
-        }
-        Update: {
-          client_id?: string
-          completion_date?: string
-          contract_url?: string | null
-          corretor_id?: string
-          created_at?: string
-          id?: string
-          notes?: string | null
-          product_name?: string
-          sale_value?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       clients_manager_view: {
