@@ -10,7 +10,7 @@ export interface Lead {
   email?: string;
   phone?: string;
   status: string;
-  status_negociacao: 'novo_lead' | 'contato_realizado' | 'visita_agendada' | 'proposta_enviada' | 'contrato_assinado';
+  status_negociacao: 'novo_lead' | 'contato_realizado' | 'visita_agendada' | 'proposta_enviada' | 'contrato_assinado' | 'em_negociacao' | 'venda_concluida';
   source?: string;
   notes?: string;
   qualificado: boolean;
@@ -300,6 +300,61 @@ export const useLeads = () => {
     return true;
   });
 
+  const finalizeSale = async (leadId: string, saleData: {
+    productName: string;
+    saleValue: number;
+    completionDate: string;
+    contractUrl?: string;
+    notes?: string;
+  }) => {
+    try {
+      if (!profile?.id) throw new Error('Usuário não autenticado');
+
+      // Salvar dados da venda
+      const { error: salesError } = await supabase
+        .from('sales_finalized')
+        .insert({
+          client_id: leadId,
+          corretor_id: profile.id,
+          product_name: saleData.productName,
+          sale_value: saleData.saleValue,
+          completion_date: saleData.completionDate,
+          contract_url: saleData.contractUrl,
+          notes: saleData.notes
+        });
+
+      if (salesError) throw salesError;
+
+      // Atualizar status do lead
+      const { error: updateError } = await supabase
+        .from('clients')
+        .update({ status_negociacao: 'venda_concluida' })
+        .eq('id', leadId);
+
+      if (updateError) throw updateError;
+
+      // Registrar atividade
+      await logActivity(leadId, 'venda_finalizada', `Venda finalizada - ${saleData.productName}`);
+
+      // Atualizar estado local
+      setLeads(prev => prev.map(lead => 
+        lead.id === leadId ? { ...lead, status_negociacao: 'venda_concluida' } : lead
+      ));
+
+      toast({
+        title: "Venda finalizada!",
+        description: "A venda foi registrada com sucesso"
+      });
+    } catch (error) {
+      console.error('Erro ao finalizar venda:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível finalizar a venda",
+        variant: "destructive"
+      });
+    }
+  };
+
   return {
     leads: filteredLeads,
     loading,
@@ -311,6 +366,7 @@ export const useLeads = () => {
     requalifyLead,
     makePhoneCall,
     sendEmail,
+    finalizeSale,
     refreshLeads: fetchLeads
   };
 };
