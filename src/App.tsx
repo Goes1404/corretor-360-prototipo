@@ -8,7 +8,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppLayout } from "./components/Layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import CRM from "./pages/CRM";
-import Calendario from "./pages/Calendario";
 import Simuladores from "./pages/Simuladores";
 import Documentos from "./pages/Documentos";
 import Recomendacoes from "./pages/Recomendacoes";
@@ -22,7 +21,6 @@ import UploadDocumentos from "./pages/UploadDocumentos";
 import FazerLigacao from "./pages/FazerLigacao";
 import EnviarEmail from "./pages/EnviarEmail";
 import NotFound from "./pages/NotFound";
-import VendasFinalizadas from "./pages/VendasFinalizadas";
 
 const queryClient = new QueryClient();
 
@@ -55,7 +53,6 @@ const AppRoutes = () => {
           profile?.role === 'GESTOR' ? <GestorDashboard /> : <Dashboard />
         } />
         <Route path="/crm" element={<ProtectedRoute><CRM /></ProtectedRoute>} />
-        <Route path="/calendario" element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
         <Route path="/clientes/:clientId" element={<ProtectedRoute><ClienteDetalhes /></ProtectedRoute>} />
         <Route path="/novo-lead" element={<ProtectedRoute><NovoLead /></ProtectedRoute>} />
         <Route path="/upload-documentos" element={<ProtectedRoute><UploadDocumentos /></ProtectedRoute>} />
@@ -66,7 +63,6 @@ const AppRoutes = () => {
         <Route path="/produtos" element={<ProtectedRoute><Produtos /></ProtectedRoute>} />
         <Route path="/recomendacoes" element={<ProtectedRoute><Recomendacoes /></ProtectedRoute>} />
         <Route path="/analise-mercado" element={<ProtectedRoute><AnaliseMercado /></ProtectedRoute>} />
-        <Route path="/vendas-finalizadas" element={<ProtectedRoute><VendasFinalizadas /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>

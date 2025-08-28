@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 interface FunnelData {
   status: string;
@@ -13,19 +12,16 @@ interface FunnelData {
 
 export function SalesFunnel() {
   const { profile } = useAuth();
-  const navigate = useNavigate();
   const [funnelData, setFunnelData] = useState<FunnelData[]>([]);
   const [totalLeads, setTotalLeads] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const statusConfig = {
     novo_lead: { label: "Novos Leads", color: "bg-primary/5", borderColor: "border-primary" },
     contato_realizado: { label: "Contato Realizado", color: "bg-blue/5", borderColor: "border-blue" },
     visita_agendada: { label: "Visita Agendada", color: "bg-warning/5", borderColor: "border-warning" },
     proposta_enviada: { label: "Proposta Enviada", color: "bg-orange/5", borderColor: "border-orange" },
-    em_negociacao: { label: "Em Negociação", color: "bg-indigo/5", borderColor: "border-indigo" },
-    contrato_assinado: { label: "Contrato Assinado", color: "bg-success/5", borderColor: "border-success" },
-    venda_concluida: { label: "Vendas Finalizadas", color: "bg-emerald/5", borderColor: "border-emerald" }
+    contrato_assinado: { label: "Contrato Assinado", color: "bg-success/5", borderColor: "border-success" }
   };
 
   const fetchFunnelData = async () => {
@@ -140,12 +136,7 @@ export function SalesFunnel() {
           return (
             <div 
               key={item.status} 
-              className={`flex items-center justify-between p-3 rounded-lg ${item.color} border-l-4 ${item.borderColor} transition-all hover:shadow-sm cursor-pointer`}
-              onClick={() => {
-                if (item.status === 'venda_concluida') {
-                  navigate('/vendas-finalizadas');
-                }
-              }}
+              className={`flex items-center justify-between p-3 rounded-lg ${item.color} border-l-4 ${item.borderColor} transition-all hover:shadow-sm`}
             >
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">

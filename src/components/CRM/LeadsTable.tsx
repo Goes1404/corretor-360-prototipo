@@ -1,108 +1,69 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Phone, 
-  Mail, 
-  MoreVertical, 
-  Star, 
-  Trash2, 
-  Users, 
-  TrendingUp, 
-  CheckCircle,
-  Clock,
-  Target,
-  Calendar,
-  UserX,
-  RotateCcw,
-  CheckCircle2
-} from "lucide-react";
-import { useLeads } from "@/hooks/useLeads";
+import { Phone, Mail, MoreHorizontal, Star, Trash, Search, Filter } from "lucide-react";
+import { useLeads, type Lead } from "@/hooks/useLeads";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { DisqualifyModal } from "./DisqualifyModal";
-import { AppointmentModal } from "@/components/Calendar/AppointmentModal";
-import { FinalizeSaleModal } from "./FinalizeSaleModal";
 
 interface LeadsTableProps {
   showStats?: boolean;
 }
 
 export function LeadsTable({ showStats = true }: LeadsTableProps) {
-  const { 
-    leads, 
-    loading, 
-    filter, 
-    setFilter, 
-    qualifyLead, 
-    deleteLead, 
-    disqualifyLead,
-    requalifyLead,
-    makePhoneCall, 
-    sendEmail 
-  } = useLeads();
-  
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [disqualifyModal, setDisqualifyModal] = useState<{leadId: string, leadName: string} | null>(null);
-  const [appointmentModal, setAppointmentModal] = useState<string | null>(null);
-  const [finalizeSaleModal, setFinalizeSaleModal] = useState<{leadId: string, leadName: string} | null>(null);
+  const { leads, loading, filter, setFilter, qualifyLead, deleteLead, makePhoneCall, sendEmail } = useLeads();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [emailDialog, setEmailDialog] = useState<{ open: boolean; lead: Lead | null }>({ open: false, lead: null });
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; lead: Lead | null }>({ open: false, lead: null });
+  const [emailData, setEmailData] = useState({ subject: "", message: "" });
 
-  const handleDeleteLead = (leadId: string) => {
-    deleteLead(leadId);
-    setDeleteConfirm(null);
-  };
+  const filteredLeads = leads.filter(lead =>
+    lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (lead.email && lead.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (lead.phone && lead.phone.includes(searchTerm))
+  );
 
-  const handleDisqualifyLead = (motivo: string, observacoes?: string) => {
-    if (disqualifyModal) {
-      disqualifyLead(disqualifyModal.leadId, motivo, observacoes);
-      setDisqualifyModal(null);
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "novo_lead":
+        return <Badge variant="secondary">Novo Lead</Badge>;
+      case "contato_realizado":
+        return <Badge variant="default">Contato Realizado</Badge>;
+      case "visita_agendada":
+        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Visita Agendada</Badge>;
+      case "proposta_enviada":
+        return <Badge className="bg-orange-100 text-orange-800 border-orange-200">Proposta Enviada</Badge>;
+      case "contrato_assinado":
+        return <Badge className="bg-green-100 text-green-800 border-green-200">Contrato Assinado</Badge>;
+      default:
+        return <Badge variant="outline">-</Badge>;
     }
   };
 
-  const handleRequalifyLead = (leadId: string) => {
-    requalifyLead(leadId);
+  const handleEmailSend = async () => {
+    if (emailDialog.lead) {
+      await sendEmail(emailDialog.lead.id, emailDialog.lead.email || '', emailData.subject, emailData.message);
+      setEmailDialog({ open: false, lead: null });
+      setEmailData({ subject: "", message: "" });
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deleteDialog.lead) {
+      await deleteLead(deleteDialog.lead.id);
+      setDeleteDialog({ open: false, lead: null });
+    }
   };
 
   const stats = {
     total: leads.length,
-    qualified: leads.filter(l => l.qualificado && !l.desqualificado).length,
-    disqualified: leads.filter(l => l.desqualificado).length,
-    contacted: leads.filter(l => l.status_negociacao !== 'novo_lead').length
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'novo_lead': return 'bg-blue-500';
-      case 'contato_realizado': return 'bg-yellow-500';
-      case 'visita_agendada': return 'bg-purple-500';
-      case 'proposta_enviada': return 'bg-orange-500';
-      case 'em_negociacao': return 'bg-indigo-500';
-      case 'contrato_assinado': return 'bg-green-500';
-      case 'venda_concluida': return 'bg-emerald-600';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'novo_lead': return 'Novo Lead';
-      case 'contato_realizado': return 'Contato Realizado';
-      case 'visita_agendada': return 'Visita Agendada';
-      case 'proposta_enviada': return 'Proposta Enviada';
-      case 'em_negociacao': return 'Em Negociação';
-      case 'contrato_assinado': return 'Contrato Assinado';
-      case 'venda_concluida': return 'Venda Concluída';
-      default: return status;
-    }
+    qualified: leads.filter(l => l.qualificado).length,
+    converted: leads.filter(l => l.status_negociacao === 'contrato_assinado').length,
+    conversionRate: leads.length > 0 ? ((leads.filter(l => l.status_negociacao === 'contrato_assinado').length / leads.length) * 100).toFixed(1) : '0'
   };
 
   if (loading) {
@@ -111,20 +72,16 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
         {showStats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-4">
-                  <div className="h-8 bg-secondary rounded mb-2"></div>
-                  <div className="h-4 bg-secondary rounded"></div>
-                </CardContent>
-              </Card>
+              <div key={i} className="card-elevated p-4 animate-pulse">
+                <div className="h-8 bg-secondary rounded mb-2"></div>
+                <div className="h-4 bg-secondary rounded"></div>
+              </div>
             ))}
           </div>
         )}
-        <Card className="animate-pulse">
-          <CardContent className="p-6">
-            <div className="h-64 bg-secondary rounded"></div>
-          </CardContent>
-        </Card>
+        <div className="card-elevated p-6">
+          <div className="h-64 bg-secondary rounded animate-pulse"></div>
+        </div>
       </div>
     );
   }
@@ -132,278 +89,216 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
   return (
     <div className="space-y-6">
       {showStats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-          <Card>
-            <CardContent className="flex items-center p-3 sm:p-4">
-              <Users className="w-6 h-6 sm:w-8 sm:h-8 text-primary mr-2 sm:mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="text-lg sm:text-2xl font-bold text-foreground">{stats.total}</div>
-                <div className="text-xs sm:text-sm text-foreground-muted truncate">Total de Leads</div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="flex items-center p-3 sm:p-4">
-              <Star className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mr-2 sm:mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="text-lg sm:text-2xl font-bold text-foreground">{stats.qualified}</div>
-                <div className="text-xs sm:text-sm text-foreground-muted truncate">Qualificados</div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="flex items-center p-3 sm:p-4">
-              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="text-lg sm:text-2xl font-bold text-foreground">{stats.contacted}</div>
-                <div className="text-xs sm:text-sm text-foreground-muted truncate">Contatados</div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="flex items-center p-3 sm:p-4">
-              <UserX className="w-6 h-6 sm:w-8 sm:h-8 text-red-500 mr-2 sm:mr-3 flex-shrink-0" />
-              <div className="min-w-0">
-                <div className="text-lg sm:text-2xl font-bold text-foreground">{stats.disqualified}</div>
-                <div className="text-xs sm:text-sm text-foreground-muted truncate">Desqualificados</div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="card-elevated p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{stats.total}</div>
+            <div className="text-sm text-foreground-muted">Total de Leads</div>
+          </div>
+          <div className="card-elevated p-4 text-center">
+            <div className="text-2xl font-bold text-warning-foreground">{stats.qualified}</div>
+            <div className="text-sm text-foreground-muted">Qualificados</div>
+          </div>
+          <div className="card-elevated p-4 text-center">
+            <div className="text-2xl font-bold text-success">{stats.converted}</div>
+            <div className="text-sm text-foreground-muted">Convertidos</div>
+          </div>
+          <div className="card-elevated p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{stats.conversionRate}%</div>
+            <div className="text-sm text-foreground-muted">Taxa Conversão</div>
+          </div>
         </div>
       )}
 
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <span>Leads</span>
-            <Select value={filter} onValueChange={(value: 'all' | 'qualified' | 'unqualified') => setFilter(value)}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="qualified">Qualificados</SelectItem>
-                <SelectItem value="unqualified">Não Qualificados</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {leads.length === 0 ? (
-            <div className="text-center py-12">
-              <Users className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-2 text-sm font-medium text-foreground">Nenhum lead encontrado</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Comece adicionando novos leads ao sistema.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto table-responsive scrollbar-thin">
-              <table className="w-full border-collapse min-w-[800px]">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-2 sm:px-4 font-medium text-foreground">Nome</th>
-                    <th className="text-left py-3 px-2 sm:px-4 font-medium text-foreground hidden sm:table-cell">Email</th>
-                    <th className="text-left py-3 px-2 sm:px-4 font-medium text-foreground">Telefone</th>
-                    <th className="text-left py-3 px-2 sm:px-4 font-medium text-foreground">Status</th>
-                    <th className="text-left py-3 px-2 sm:px-4 font-medium text-foreground hidden lg:table-cell">Qualificação</th>
-                    <th className="text-right py-3 px-2 sm:px-4 font-medium text-foreground">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {leads.map((lead) => (
-                    <tr key={lead.id} className="border-b border-border hover:bg-muted/50">
-                      <td className="py-3 px-2 sm:px-4">
-                        <div className="font-medium text-foreground text-sm">{lead.name}</div>
-                        <div className="text-xs text-muted-foreground sm:hidden">{lead.email}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
-                        </div>
-                      </td>
-                      <td className="py-3 px-2 sm:px-4 text-sm text-foreground-muted hidden sm:table-cell">{lead.email}</td>
-                      <td className="py-3 px-2 sm:px-4 text-sm text-foreground-muted">{lead.phone}</td>
-                      <td className="py-3 px-2 sm:px-4">
-                        <Badge className={`${getStatusColor(lead.status_negociacao)} text-white text-xs`}>
-                          {getStatusLabel(lead.status_negociacao)}
-                        </Badge>
-                        <div className="lg:hidden mt-1">
-                          {lead.qualificado && !lead.desqualificado && (
-                            <Badge className="bg-green-500 text-white text-xs">
-                              Qualificado
-                            </Badge>
-                          )}
-                          {lead.desqualificado && (
-                            <Badge className="bg-red-500 text-white text-xs">
-                              Desqualificado
-                            </Badge>
-                          )}
-                          {!lead.qualificado && !lead.desqualificado && (
-                            <Badge variant="secondary" className="text-xs">Pendente</Badge>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-2 sm:px-4 hidden lg:table-cell">
-                        {lead.qualificado && !lead.desqualificado && (
-                          <Badge className="bg-green-500 text-white">
-                            <Star className="w-3 h-3 mr-1" />
-                            Qualificado
-                          </Badge>
-                        )}
-                        {lead.desqualificado && (
-                          <Badge className="bg-red-500 text-white">
-                            <UserX className="w-3 h-3 mr-1" />
-                            Desqualificado
-                          </Badge>
-                        )}
-                        {!lead.qualificado && !lead.desqualificado && (
-                          <Badge variant="secondary">Pendente</Badge>
-                        )}
-                      </td>
-                      <td className="py-3 px-2 sm:px-4">
-                        <div className="flex items-center justify-end gap-1 sm:gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => makePhoneCall(lead.id, lead.phone || '')}
-                            disabled={!lead.phone}
-                            className="p-2"
-                          >
-                            <Phone className="w-4 h-4" />
-                          </Button>
-                          
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => sendEmail(lead.id, lead.email || '', 'Contato', 'Olá!')}
-                            disabled={!lead.email}
-                            className="p-2 hidden sm:flex"
-                          >
-                            <Mail className="w-4 h-4" />
-                          </Button>
-                          
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button size="sm" variant="outline" className="p-2">
-                                <MoreVertical className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem 
-                                onClick={() => sendEmail(lead.id, lead.email || '', 'Contato', 'Olá!')}
-                                disabled={!lead.email}
-                                className="sm:hidden"
-                              >
-                                <Mail className="w-4 h-4 mr-2" />
-                                Enviar Email
-                              </DropdownMenuItem>
-                              
-                              {!lead.qualificado && !lead.desqualificado && (
-                                <DropdownMenuItem onClick={() => qualifyLead(lead.id)}>
-                                  <Star className="w-4 h-4 mr-2" />
-                                  Qualificar Lead
-                                </DropdownMenuItem>
-                              )}
-                              
-                              <DropdownMenuItem onClick={() => setAppointmentModal(lead.id)}>
-                                <Calendar className="w-4 h-4 mr-2" />
-                                Agendar Atendimento
-                              </DropdownMenuItem>
-                              
-                              {/* Mostrar "Finalizar Venda" apenas para leads em negociação ou proposta enviada */}
-                              {(lead.status_negociacao === 'em_negociacao' || lead.status_negociacao === 'proposta_enviada') && (
-                                <DropdownMenuItem 
-                                  onClick={() => setFinalizeSaleModal({leadId: lead.id, leadName: lead.name})}
-                                  className="text-success"
-                                >
-                                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                                  Finalizar Venda
-                                </DropdownMenuItem>
-                              )}
-                              
-                              <DropdownMenuSeparator />
-                              
-                              {lead.desqualificado ? (
-                                <DropdownMenuItem onClick={() => handleRequalifyLead(lead.id)}>
-                                  <RotateCcw className="w-4 h-4 mr-2" />
-                                  Requalificar Lead
-                                </DropdownMenuItem>
-                              ) : (
-                                <DropdownMenuItem 
-                                  onClick={() => setDisqualifyModal({leadId: lead.id, leadName: lead.name})}
-                                >
-                                  <UserX className="w-4 h-4 mr-2" />
-                                  Desqualificar Lead
-                                </DropdownMenuItem>
-                              )}
-                              
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => setDeleteConfirm(lead.id)}
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Excluir Lead
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Delete Confirmation */}
-      {deleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-96">
-            <CardHeader>
-              <CardTitle>Confirmar Exclusão</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Tem certeza que deseja excluir este lead? Esta ação não pode ser desfeita.</p>
-              <div className="flex gap-2 mt-4">
-                <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
-                  Cancelar
-                </Button>
-                <Button variant="destructive" onClick={() => handleDeleteLead(deleteConfirm)}>
-                  Excluir
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Filters and Search */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground-muted w-4 h-4" />
+          <Input
+            placeholder="Buscar leads por nome, email ou telefone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
-      )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <Filter className="w-4 h-4" />
+              {filter === 'all' && 'Todos'}
+              {filter === 'qualified' && 'Qualificados'}
+              {filter === 'unqualified' && 'Não Qualificados'}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setFilter('all')}>
+              Todos os Leads
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setFilter('qualified')}>
+              Apenas Qualificados
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setFilter('unqualified')}>
+              Não Qualificados
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
 
-      {/* Modals */}
-      <DisqualifyModal
-        isOpen={!!disqualifyModal}
-        onClose={() => setDisqualifyModal(null)}
-        onConfirm={handleDisqualifyLead}
-        leadName={disqualifyModal?.leadName || ''}
-      />
+      {/* Leads Table */}
+      <div className="card-elevated overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-background-muted">
+              <tr>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted">Nome</th>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted">Contato</th>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted">Status</th>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted">Origem</th>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted">Criado em</th>
+                <th className="text-left p-4 text-sm font-medium text-foreground-muted">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredLeads.map((lead, index) => (
+                <tr key={lead.id} className={index % 2 === 0 ? "bg-background" : "bg-background-secondary"}>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <div className="font-medium text-foreground">{lead.name}</div>
+                        <div className="text-sm text-foreground-muted">{lead.email}</div>
+                      </div>
+                      {lead.qualificado && (
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4">
+                    <div className="text-sm text-foreground">{lead.phone}</div>
+                  </td>
+                  <td className="p-4">
+                    {getStatusBadge(lead.status_negociacao)}
+                  </td>
+                  <td className="p-4 text-sm text-foreground">{lead.source || '-'}</td>
+                  <td className="p-4 text-sm text-foreground-muted">
+                    {format(new Date(lead.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                  </td>
+                  <td className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-8 h-8 p-0"
+                        onClick={() => makePhoneCall(lead.id, lead.phone || '')}
+                        disabled={!lead.phone}
+                      >
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-8 h-8 p-0"
+                        onClick={() => setEmailDialog({ open: true, lead })}
+                        disabled={!lead.email}
+                      >
+                        <Mail className="w-4 h-4" />
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="outline" className="w-8 h-8 p-0">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          {!lead.qualificado && (
+                            <DropdownMenuItem onClick={() => qualifyLead(lead.id)}>
+                              <Star className="w-4 h-4 mr-2" />
+                              Qualificar Lead
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem 
+                            onClick={() => setDeleteDialog({ open: true, lead })}
+                            className="text-destructive"
+                          >
+                            <Trash className="w-4 h-4 mr-2" />
+                            Excluir Lead
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      <AppointmentModal
-        isOpen={!!appointmentModal}
-        onClose={() => setAppointmentModal(null)}
-        preSelectedClientId={appointmentModal || undefined}
-      />
+        {filteredLeads.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-foreground-muted">Nenhum lead encontrado</p>
+            <p className="text-sm text-foreground-muted mt-1">
+              {searchTerm ? 'Tente ajustar sua busca' : 'Comece adicionando novos leads ao sistema'}
+            </p>
+          </div>
+        )}
+      </div>
 
-      <FinalizeSaleModal
-        isOpen={!!finalizeSaleModal}
-        onClose={() => setFinalizeSaleModal(null)}
-        leadId={finalizeSaleModal?.leadId || ''}
-        leadName={finalizeSaleModal?.leadName || ''}
-        onSuccess={() => window.location.reload()}
-      />
+      {/* Email Dialog */}
+      <Dialog open={emailDialog.open} onOpenChange={(open) => setEmailDialog({ open, lead: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enviar E-mail para {emailDialog.lead?.name}</DialogTitle>
+            <DialogDescription>
+              Enviar e-mail para: {emailDialog.lead?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Assunto</label>
+              <Input
+                value={emailData.subject}
+                onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
+                placeholder="Digite o assunto do e-mail"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Mensagem</label>
+              <Textarea
+                value={emailData.message}
+                onChange={(e) => setEmailData(prev => ({ ...prev, message: e.target.value }))}
+                placeholder="Digite sua mensagem"
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailDialog({ open: false, lead: null })}>
+              Cancelar
+            </Button>
+            <Button onClick={handleEmailSend}>
+              Enviar E-mail
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open, lead: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir Lead</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja excluir o lead "{deleteDialog.lead?.name}"? Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog({ open: false, lead: null })}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

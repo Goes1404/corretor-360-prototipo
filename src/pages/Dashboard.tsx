@@ -7,20 +7,20 @@ import { LeadsTable } from "@/components/CRM/LeadsTable";
 
 const Dashboard = () => {
   return (
-    <div className="animate-fade-in space-y-4 sm:space-y-6">
+    <div className="animate-fade-in space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-foreground-muted mt-1 text-sm sm:text-base">Visão geral da sua performance comercial</p>
+          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-foreground-muted mt-1">Visão geral da sua performance comercial</p>
         </div>
-        <div className="text-xs sm:text-sm text-foreground-muted">
+        <div className="text-sm text-foreground-muted">
           Atualizado há 5 minutos
         </div>
       </div>
 
       {/* KPIs Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <KPICard
           title="Leads Ativos"
           value="247"
@@ -75,7 +75,7 @@ const Dashboard = () => {
       <QuickActions />
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sales Funnel */}
         <SalesFunnel />
 

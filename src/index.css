@@ -138,7 +138,6 @@
 
   body {
     @apply bg-background text-foreground;
-    @apply overflow-x-hidden;
   }
 }
 
@@ -190,70 +189,6 @@
   /* Hover Effects */
   .hover-lift {
     @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
-  }
-  
-  /* Responsive Utilities */
-  .container-responsive {
-    @apply w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8;
-  }
-
-  .grid-responsive {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6;
-  }
-
-  .grid-responsive-2 {
-    @apply grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6;
-  }
-
-  .flex-responsive {
-    @apply flex flex-col sm:flex-row gap-2 sm:gap-4;
-  }
-
-  .text-responsive {
-    @apply text-sm sm:text-base;
-  }
-
-  .text-responsive-lg {
-    @apply text-base sm:text-lg lg:text-xl;
-  }
-
-  .p-responsive {
-    @apply p-3 sm:p-4 lg:p-6;
-  }
-
-  .m-responsive {
-    @apply m-3 sm:m-4 lg:m-6;
-  }
-
-  /* Table responsive */
-  .table-responsive {
-    @apply block overflow-x-auto;
-  }
-  
-  .table-responsive table {
-    @apply min-w-full;
-  }
-
-  /* Mobile scrollbar */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    @apply bg-background;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground;
   }
 }
 

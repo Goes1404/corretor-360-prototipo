@@ -54,20 +54,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "activities_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients_manager_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activities_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients_secure_view"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "activities_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -75,45 +61,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      appointments: {
-        Row: {
-          client_id: string
-          corretor_id: string
-          created_at: string
-          date_time: string
-          id: string
-          location: string | null
-          notes: string | null
-          status: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          client_id: string
-          corretor_id: string
-          created_at?: string
-          date_time: string
-          id?: string
-          location?: string | null
-          notes?: string | null
-          status?: string
-          title?: string
-          updated_at?: string
-        }
-        Update: {
-          client_id?: string
-          corretor_id?: string
-          created_at?: string
-          date_time?: string
-          id?: string
-          location?: string | null
-          notes?: string | null
-          status?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       client_documents: {
         Row: {
@@ -166,20 +113,6 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "client_documents_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients_manager_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "client_documents_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients_secure_view"
-            referencedColumns: ["id"]
-          },
         ]
       }
       clients: {
@@ -187,13 +120,10 @@ export type Database = {
           corretor_id: string
           cpf: string | null
           created_at: string | null
-          desqualificado: boolean | null
           email: string | null
           id: string
-          motivo_desqualificacao: string | null
           name: string
           notes: string | null
-          observacoes_desqualificacao: string | null
           phone: string | null
           qualificado: boolean | null
           source: string | null
@@ -205,13 +135,10 @@ export type Database = {
           corretor_id: string
           cpf?: string | null
           created_at?: string | null
-          desqualificado?: boolean | null
           email?: string | null
           id?: string
-          motivo_desqualificacao?: string | null
           name: string
           notes?: string | null
-          observacoes_desqualificacao?: string | null
           phone?: string | null
           qualificado?: boolean | null
           source?: string | null
@@ -223,13 +150,10 @@ export type Database = {
           corretor_id?: string
           cpf?: string | null
           created_at?: string | null
-          desqualificado?: boolean | null
           email?: string | null
           id?: string
-          motivo_desqualificacao?: string | null
           name?: string
           notes?: string | null
-          observacoes_desqualificacao?: string | null
           phone?: string | null
           qualificado?: boolean | null
           source?: string | null
@@ -477,20 +401,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "sales_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients_manager_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "sales_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients_secure_view"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "sales_corretor_id_fkey"
             columns: ["corretor_id"]
             isOneToOne: false
@@ -506,183 +416,12 @@ export type Database = {
           },
         ]
       }
-      sales_finalized: {
-        Row: {
-          client_id: string
-          completion_date: string
-          contract_url: string | null
-          corretor_id: string
-          created_at: string
-          id: string
-          notes: string | null
-          product_name: string
-          sale_value: number
-          updated_at: string
-        }
-        Insert: {
-          client_id: string
-          completion_date: string
-          contract_url?: string | null
-          corretor_id: string
-          created_at?: string
-          id?: string
-          notes?: string | null
-          product_name: string
-          sale_value: number
-          updated_at?: string
-        }
-        Update: {
-          client_id?: string
-          completion_date?: string
-          contract_url?: string | null
-          corretor_id?: string
-          created_at?: string
-          id?: string
-          notes?: string | null
-          product_name?: string
-          sale_value?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
-      clients_manager_view: {
-        Row: {
-          corretor_id: string | null
-          cpf: string | null
-          created_at: string | null
-          desqualificado: boolean | null
-          email: string | null
-          id: string | null
-          motivo_desqualificacao: string | null
-          name: string | null
-          notes: string | null
-          observacoes_desqualificacao: string | null
-          phone: string | null
-          qualificado: boolean | null
-          source: string | null
-          status: string | null
-          status_negociacao: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          corretor_id?: string | null
-          cpf?: never
-          created_at?: string | null
-          desqualificado?: boolean | null
-          email?: never
-          id?: string | null
-          motivo_desqualificacao?: string | null
-          name?: string | null
-          notes?: never
-          observacoes_desqualificacao?: string | null
-          phone?: never
-          qualificado?: boolean | null
-          source?: string | null
-          status?: string | null
-          status_negociacao?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          corretor_id?: string | null
-          cpf?: never
-          created_at?: string | null
-          desqualificado?: boolean | null
-          email?: never
-          id?: string | null
-          motivo_desqualificacao?: string | null
-          name?: string | null
-          notes?: never
-          observacoes_desqualificacao?: string | null
-          phone?: never
-          qualificado?: boolean | null
-          source?: string | null
-          status?: string | null
-          status_negociacao?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clients_corretor_id_fkey"
-            columns: ["corretor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      clients_secure_view: {
-        Row: {
-          corretor_id: string | null
-          cpf: string | null
-          created_at: string | null
-          desqualificado: boolean | null
-          email: string | null
-          id: string | null
-          motivo_desqualificacao: string | null
-          name: string | null
-          notes: string | null
-          observacoes_desqualificacao: string | null
-          phone: string | null
-          qualificado: boolean | null
-          source: string | null
-          status: string | null
-          status_negociacao: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          corretor_id?: string | null
-          cpf?: never
-          created_at?: string | null
-          desqualificado?: boolean | null
-          email?: never
-          id?: string | null
-          motivo_desqualificacao?: string | null
-          name?: string | null
-          notes?: never
-          observacoes_desqualificacao?: string | null
-          phone?: never
-          qualificado?: boolean | null
-          source?: string | null
-          status?: string | null
-          status_negociacao?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          corretor_id?: string | null
-          cpf?: never
-          created_at?: string | null
-          desqualificado?: boolean | null
-          email?: never
-          id?: string | null
-          motivo_desqualificacao?: string | null
-          name?: string | null
-          notes?: never
-          observacoes_desqualificacao?: string | null
-          phone?: never
-          qualificado?: boolean | null
-          source?: string | null
-          status?: string | null
-          status_negociacao?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clients_corretor_id_fkey"
-            columns: ["corretor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
-      get_current_user_role: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
