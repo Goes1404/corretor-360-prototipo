@@ -7,14 +7,14 @@ const CRM = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="animate-fade-in space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">CRM Inteligente</h1>
-          <p className="text-foreground-muted mt-1">Gerencie seus leads e oportunidades</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">CRM Inteligente</h1>
+          <p className="text-foreground-muted mt-1 text-sm sm:text-base">Gerencie seus leads e oportunidades</p>
         </div>
-        <Button className="gap-2" onClick={() => navigate("/novo-lead")}>
+        <Button className="gap-2 w-full sm:w-auto" onClick={() => navigate("/novo-lead")}>
           <Plus className="w-4 h-4" />
           Novo Lead
         </Button>

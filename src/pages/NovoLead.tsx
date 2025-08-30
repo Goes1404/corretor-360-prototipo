@@ -33,6 +33,39 @@ const NovoLead = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Verificar duplicidade antes de cadastrar
+    if (formData.email || formData.phone) {
+      try {
+        let duplicateQuery = supabase
+          .from('clients')
+          .select('id, name, email, phone');
+
+        if (formData.email && formData.phone) {
+          duplicateQuery = duplicateQuery.or(`email.eq.${formData.email},phone.eq.${formData.phone}`);
+        } else if (formData.email) {
+          duplicateQuery = duplicateQuery.eq('email', formData.email);
+        } else if (formData.phone) {
+          duplicateQuery = duplicateQuery.eq('phone', formData.phone);
+        }
+
+        const { data: duplicates, error: duplicateError } = await duplicateQuery;
+
+        if (duplicateError) {
+          console.error('Erro ao verificar duplicidade:', duplicateError);
+        } else if (duplicates && duplicates.length > 0) {
+          const duplicate = duplicates[0];
+          toast({
+            title: "Lead já cadastrado",
+            description: `Já existe um lead com estes dados: ${duplicate.name}`,
+            variant: "destructive"
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Erro ao verificar duplicidade:', error);
+      }
+    }
     if (!profile) return;
 
     setLoading(true);
@@ -80,24 +113,24 @@ const NovoLead = () => {
   };
 
   return (
-    <div className="animate-fade-in space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="animate-fade-in space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate(-1)}
-          className="gap-2"
+          className="gap-2 self-start"
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </Button>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Novo Lead</h1>
-          <p className="text-foreground-muted mt-1">Cadastre um novo prospect</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Novo Lead</h1>
+          <p className="text-foreground-muted mt-1 text-sm sm:text-base">Cadastre um novo prospect</p>
         </div>
       </div>
 
-      <Card className="max-w-4xl">
+      <Card className="w-full max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Save className="w-5 h-5" />
@@ -105,8 +138,8 @@ const NovoLead = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
                 <Input
@@ -208,8 +241,8 @@ const NovoLead = () => {
               />
             </div>
             
-            <div className="flex gap-4 pt-6">
-              <Button type="submit" disabled={loading} className="gap-2">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
+              <Button type="submit" disabled={loading} className="gap-2 w-full sm:w-auto">
                 <Save className="w-4 h-4" />
                 {loading ? "Salvando..." : "Salvar Lead"}
               </Button>
@@ -217,6 +250,7 @@ const NovoLead = () => {
                 type="button" 
                 variant="outline" 
                 onClick={() => navigate(-1)}
+                className="w-full sm:w-auto"
               >
                 Cancelar
               </Button>
