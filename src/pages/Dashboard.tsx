@@ -4,8 +4,11 @@ import { QuickActions } from "@/components/Dashboard/QuickActions";
 import { SalesFunnel } from "@/components/Dashboard/SalesFunnel";
 import { RealTimeActivities } from "@/components/Dashboard/RealTimeActivities";
 import { LeadsTable } from "@/components/CRM/LeadsTable";
+import { useDashboardKPIs } from "@/hooks/useDashboardKPIs";
 
 const Dashboard = () => {
+  const kpis = useDashboardKPIs();
+
   return (
     <div className="animate-fade-in space-y-4 sm:space-y-6">
       {/* Header */}
@@ -23,23 +26,23 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
         <KPICard
           title="Leads Ativos"
-          value="247"
+          value={kpis.loading ? "..." : kpis.leadsAtivos.toString()}
           change="+12% vs mês anterior"
           changeType="positive"
           icon={Users}
-          description="15 novos esta semana"
+          description="Leads em andamento"
         />
         <KPICard
           title="Propostas Enviadas"
-          value="89"
+          value={kpis.loading ? "..." : kpis.propostasEnviadas.toString()}
           change="+8% vs mês anterior"
           changeType="positive"
           icon={FileText}
-          description="23 aguardando retorno"
+          description="Aguardando retorno"
         />
         <KPICard
           title="Taxa de Conversão"
-          value="24.5%"
+          value={kpis.loading ? "..." : `${kpis.taxaConversao}%`}
           change="+2.1% vs mês anterior"
           changeType="positive"
           icon={Target}
@@ -47,7 +50,7 @@ const Dashboard = () => {
         />
         <KPICard
           title="Vendas do Mês"
-          value="R$ 485K"
+          value={kpis.loading ? "..." : `R$ ${(kpis.vendasMes / 1000).toFixed(0)}K`}
           change="+15% vs mês anterior"
           changeType="positive"
           icon={DollarSign}
@@ -55,19 +58,19 @@ const Dashboard = () => {
         />
         <KPICard
           title="Docs Pendentes"
-          value="12"
+          value={kpis.loading ? "..." : kpis.docsPendentes.toString()}
           change="-3 vs semana passada"
           changeType="positive"
           icon={Clock}
-          description="5 vencendo hoje"
+          description="Documentos pendentes"
         />
         <KPICard
           title="Score Performance"
-          value="8.7/10"
+          value={kpis.loading ? "..." : `${kpis.scorePerformance}/10`}
           change="+0.3 vs mês anterior"
           changeType="positive"
           icon={TrendingUp}
-          description="Excelente"
+          description={kpis.scorePerformance >= 8 ? "Excelente" : kpis.scorePerformance >= 6 ? "Bom" : "Regular"}
         />
       </div>
 
@@ -86,34 +89,51 @@ const Dashboard = () => {
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-foreground">Vendas</span>
-                <span className="text-foreground-muted">R$ 485K / R$ 500K</span>
+                <span className="text-foreground-muted">
+                  R$ {(kpis.vendasMes / 1000).toFixed(0)}K / R$ 500K
+                </span>
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-gradient-primary h-2 rounded-full" style={{ width: "97%" }}></div>
+                <div 
+                  className="bg-gradient-primary h-2 rounded-full" 
+                  style={{ width: `${Math.min(100, (kpis.vendasMes / 500000) * 100)}%` }}
+                ></div>
               </div>
-              <p className="text-xs text-success mt-1">97% da meta atingida</p>
+              <p className="text-xs text-success mt-1">
+                {Math.round((kpis.vendasMes / 500000) * 100)}% da meta atingida
+              </p>
             </div>
             
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <span className="text-foreground">Novos Leads</span>
-                <span className="text-foreground-muted">247 / 300</span>
+                <span className="text-foreground-muted">{kpis.leadsAtivos} / 300</span>
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-gradient-primary h-2 rounded-full" style={{ width: "82%" }}></div>
+                <div 
+                  className="bg-gradient-primary h-2 rounded-full" 
+                  style={{ width: `${Math.min(100, (kpis.leadsAtivos / 300) * 100)}%` }}
+                ></div>
               </div>
-              <p className="text-xs text-warning-foreground mt-1">82% da meta atingida</p>
+              <p className="text-xs text-warning-foreground mt-1">
+                {Math.round((kpis.leadsAtivos / 300) * 100)}% da meta atingida
+              </p>
             </div>
 
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="text-foreground">Conversões</span>
-                <span className="text-foreground-muted">34 / 40</span>
+                <span className="text-foreground">Taxa de Conversão</span>
+                <span className="text-foreground-muted">{kpis.taxaConversao}% / 25%</span>
               </div>
               <div className="w-full bg-secondary rounded-full h-2">
-                <div className="bg-gradient-primary h-2 rounded-full" style={{ width: "85%" }}></div>
+                <div 
+                  className="bg-gradient-primary h-2 rounded-full" 
+                  style={{ width: `${Math.min(100, (kpis.taxaConversao / 25) * 100)}%` }}
+                ></div>
               </div>
-              <p className="text-xs text-warning-foreground mt-1">85% da meta atingida</p>
+              <p className="text-xs text-warning-foreground mt-1">
+                {Math.round((kpis.taxaConversao / 25) * 100)}% da meta atingida
+              </p>
             </div>
           </div>
         </div>
