@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BarChart3, Users, TrendingUp, DollarSign, Clock, Award, FileDown } from "lucide-react";
+import { BarChart3, Users, TrendingUp, DollarSign, Clock, Award, FileDown, ArrowUpDown, Trophy, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,6 +25,8 @@ const GestorDashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("month");
   const [selectedCorretor, setSelectedCorretor] = useState("all");
   const [selectedProductType, setSelectedProductType] = useState("all");
+  const [sortBy, setSortBy] = useState("conversion_rate");
+  const [sortOrder, setSortOrder] = useState("desc");
   const { toast } = useToast();
 
   const fetchMetrics = async () => {
@@ -117,6 +119,56 @@ const GestorDashboard = () => {
     });
   };
 
+  // Função para ordenar métricas
+  const sortedMetrics = [...metrics].sort((a, b) => {
+    let aVal, bVal;
+    
+    switch (sortBy) {
+      case "conversion_rate":
+        aVal = a.conversion_rate;
+        bVal = b.conversion_rate;
+        break;
+      case "total_sales":
+        aVal = a.total_sales;
+        bVal = b.total_sales;
+        break;
+      case "avg_closing_time":
+        aVal = a.avg_closing_time;
+        bVal = b.avg_closing_time;
+        break;
+      case "leads_count":
+        aVal = a.leads_count;
+        bVal = b.leads_count;
+        break;
+      default:
+        aVal = a.conversion_rate;
+        bVal = b.conversion_rate;
+    }
+    
+    return sortOrder === "desc" ? bVal - aVal : aVal - bVal;
+  });
+
+  // Função para encontrar melhor e pior em cada categoria
+  const getBestAndWorst = (metric: keyof CorretorMetrics) => {
+    if (metrics.length === 0) return { best: null, worst: null };
+    
+    const sorted = [...metrics].sort((a, b) => {
+      const aVal = a[metric] as number;
+      const bVal = b[metric] as number;
+      return bVal - aVal;
+    });
+    
+    return {
+      best: sorted[0],
+      worst: sorted[sorted.length - 1]
+    };
+  };
+
+  const conversionLeaders = getBestAndWorst('conversion_rate');
+  const salesLeaders = getBestAndWorst('total_sales');
+  const timeLeaders = getBestAndWorst('avg_closing_time');
+  const leadsLeaders = getBestAndWorst('leads_count');
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -187,6 +239,30 @@ const GestorDashboard = () => {
               </SelectContent>
             </Select>
           </div>
+          <div className="flex-1 min-w-[200px]">
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="Ordenar por" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="conversion_rate">Taxa de Conversão</SelectItem>
+                <SelectItem value="total_sales">Total Vendido</SelectItem>
+                <SelectItem value="avg_closing_time">Tempo Médio</SelectItem>
+                <SelectItem value="leads_count">Quantidade de Leads</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="min-w-[120px]">
+            <Select value={sortOrder} onValueChange={setSortOrder}>
+              <SelectTrigger>
+                <SelectValue placeholder="Ordem" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Maior → Menor</SelectItem>
+                <SelectItem value="asc">Menor → Maior</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </Card>
 
@@ -247,13 +323,78 @@ const GestorDashboard = () => {
         </Card>
       </div>
 
+      {/* Destaques da Equipe */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="p-4 border-l-4 border-l-success">
+          <div className="flex items-center gap-2 mb-2">
+            <Trophy className="w-4 h-4 text-success" />
+            <span className="text-sm font-medium text-foreground">🏆 Melhor Conversão</span>
+          </div>
+          {conversionLeaders.best && (
+            <>
+              <p className="font-semibold text-foreground">{conversionLeaders.best.full_name}</p>
+              <p className="text-sm text-success">{conversionLeaders.best.conversion_rate.toFixed(1)}%</p>
+            </>
+          )}
+        </Card>
+
+        <Card className="p-4 border-l-4 border-l-primary">
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">💰 Maior Vendedor</span>
+          </div>
+          {salesLeaders.best && (
+            <>
+              <p className="font-semibold text-foreground">{salesLeaders.best.full_name}</p>
+              <p className="text-sm text-primary">R$ {salesLeaders.best.total_sales.toLocaleString('pt-BR')}</p>
+            </>
+          )}
+        </Card>
+
+        <Card className="p-4 border-l-4 border-l-warning">
+          <div className="flex items-center gap-2 mb-2">
+            <Clock className="w-4 h-4 text-warning-foreground" />
+            <span className="text-sm font-medium text-foreground">⚡ Mais Rápido</span>
+          </div>
+          {timeLeaders.worst && (
+            <>
+              <p className="font-semibold text-foreground">{timeLeaders.worst.full_name}</p>
+              <p className="text-sm text-warning-foreground">{timeLeaders.worst.avg_closing_time} dias</p>
+            </>
+          )}
+        </Card>
+
+        <Card className="p-4 border-l-4 border-l-secondary">
+          <div className="flex items-center gap-2 mb-2">
+            <Target className="w-4 h-4 text-secondary-foreground" />
+            <span className="text-sm font-medium text-foreground">🎯 Mais Leads</span>
+          </div>
+          {leadsLeaders.best && (
+            <>
+              <p className="font-semibold text-foreground">{leadsLeaders.best.full_name}</p>
+              <p className="text-sm text-secondary-foreground">{leadsLeaders.best.leads_count} leads</p>
+            </>
+          )}
+        </Card>
+      </div>
+
       {/* Performance por Corretor */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Performance Individual</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-foreground">Performance Individual</h3>
+          <div className="flex items-center gap-2 text-sm text-foreground-muted">
+            <ArrowUpDown className="w-4 h-4" />
+            Ordenado por: {sortBy === "conversion_rate" ? "Taxa de Conversão" : 
+                          sortBy === "total_sales" ? "Total Vendido" :
+                          sortBy === "avg_closing_time" ? "Tempo Médio" : "Quantidade de Leads"}
+            ({sortOrder === "desc" ? "Maior → Menor" : "Menor → Maior"})
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
+                <th className="text-left p-3 text-sm font-medium text-foreground-muted">Posição</th>
                 <th className="text-left p-3 text-sm font-medium text-foreground-muted">Corretor</th>
                 <th className="text-left p-3 text-sm font-medium text-foreground-muted">Taxa de Conversão</th>
                 <th className="text-left p-3 text-sm font-medium text-foreground-muted">Total Vendido</th>
@@ -263,10 +404,26 @@ const GestorDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {metrics.map((corretor) => {
+              {sortedMetrics.map((corretor, index) => {
                 const performance = getPerformanceStatus(corretor.conversion_rate);
+                const isTopPerformer = index === 0;
+                const isBottomPerformer = index === sortedMetrics.length - 1 && sortedMetrics.length > 1;
+                
                 return (
-                  <tr key={corretor.id} className="border-b border-border hover:bg-secondary/50">
+                  <tr key={corretor.id} className={`border-b border-border hover:bg-secondary/50 ${
+                    isTopPerformer ? 'bg-success/5' : isBottomPerformer ? 'bg-destructive/5' : ''
+                  }`}>
+                    <td className="p-3">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm font-bold ${
+                          isTopPerformer ? 'text-success' : 
+                          isBottomPerformer ? 'text-destructive' : 'text-foreground-muted'
+                        }`}>
+                          #{index + 1}
+                        </span>
+                        {isTopPerformer && <Trophy className="w-4 h-4 text-success" />}
+                      </div>
+                    </td>
                     <td className="p-3">
                       <div className="font-medium text-foreground">{corretor.full_name}</div>
                     </td>
