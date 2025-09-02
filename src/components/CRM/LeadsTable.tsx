@@ -24,9 +24,12 @@ import {
   Calendar,
   UserX,
   RotateCcw,
-  CheckCircle2
+  CheckCircle2,
+  FileText,
+  DollarSign
 } from "lucide-react";
 import { useLeads } from "@/hooks/useLeads";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DisqualifyModal } from "./DisqualifyModal";
@@ -38,6 +41,7 @@ interface LeadsTableProps {
 }
 
 export function LeadsTable({ showStats = true }: LeadsTableProps) {
+  const navigate = useNavigate();
   const { 
     leads, 
     loading, 
@@ -292,6 +296,11 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
+                              <DropdownMenuItem onClick={() => navigate(`/detalhes-lead/${lead.id}`)}>
+                                <FileText className="w-4 h-4 mr-2" />
+                                Ver Detalhes
+                              </DropdownMenuItem>
+                              
                               <DropdownMenuItem 
                                 onClick={() => sendEmail(lead.id, lead.email || '', 'Contato', 'Olá!')}
                                 disabled={!lead.email}
@@ -311,6 +320,13 @@ export function LeadsTable({ showStats = true }: LeadsTableProps) {
                               <DropdownMenuItem onClick={() => setAppointmentModal(lead.id)}>
                                 <Calendar className="w-4 h-4 mr-2" />
                                 Agendar Atendimento
+                              </DropdownMenuItem>
+                              
+                              <DropdownMenuSeparator />
+                              
+                              <DropdownMenuItem onClick={() => navigate(`/fechar-venda/${lead.id}`)}>
+                                <DollarSign className="w-4 h-4 mr-2" />
+                                Fechar Venda
                               </DropdownMenuItem>
                               
                               {/* Mostrar "Finalizar Venda" apenas para leads em negociação ou proposta enviada */}
