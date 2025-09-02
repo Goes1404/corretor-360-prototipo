@@ -23,6 +23,8 @@ import FazerLigacao from "./pages/FazerLigacao";
 import EnviarEmail from "./pages/EnviarEmail";
 import NotFound from "./pages/NotFound";
 import VendasFinalizadas from "./pages/VendasFinalizadas";
+import FecharVenda from "./pages/FecharVenda";
+import DetalhesLead from "./pages/DetalhesLead";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +69,8 @@ const AppRoutes = () => {
         <Route path="/recomendacoes" element={<ProtectedRoute><Recomendacoes /></ProtectedRoute>} />
         <Route path="/analise-mercado" element={<ProtectedRoute><AnaliseMercado /></ProtectedRoute>} />
         <Route path="/vendas-finalizadas" element={<ProtectedRoute><VendasFinalizadas /></ProtectedRoute>} />
+        <Route path="/fechar-venda/:leadId" element={<ProtectedRoute><FecharVenda /></ProtectedRoute>} />
+        <Route path="/detalhes-lead/:leadId" element={<ProtectedRoute><DetalhesLead /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AppLayout>
