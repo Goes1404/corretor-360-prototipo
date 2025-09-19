@@ -355,6 +355,49 @@ export const useLeads = () => {
     }
   };
 
+  const updateLeadPhase = async (leadId: string, newStatus: string) => {
+    if (!profile?.id) return false;
+
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ status_negociacao: newStatus })
+        .eq('id', leadId);
+
+      if (error) {
+        console.error('Erro ao atualizar fase do lead:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível atualizar a fase do lead",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      // Atualizar estado local
+      setLeads(prevLeads => 
+        prevLeads.map(lead => 
+          lead.id === leadId 
+            ? { ...lead, status_negociacao: newStatus as Lead['status_negociacao'] }
+            : lead
+        )
+      );
+
+      // Log da atividade
+      await logActivity(leadId, 'STATUS_CHANGE', `Status alterado para: ${newStatus}`);
+
+      toast({
+        title: "Fase atualizada",
+        description: "A fase do lead foi atualizada com sucesso",
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Erro ao atualizar fase do lead:', error);
+      return false;
+    }
+  };
+
   return {
     leads: filteredLeads,
     loading,
@@ -367,6 +410,7 @@ export const useLeads = () => {
     makePhoneCall,
     sendEmail,
     finalizeSale,
+    updateLeadPhase,
     refreshLeads: fetchLeads
   };
 };

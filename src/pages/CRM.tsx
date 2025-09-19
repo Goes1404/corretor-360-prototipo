@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LeadsTable } from "@/components/CRM/LeadsTable";
 
@@ -14,10 +14,16 @@ const CRM = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">CRM Inteligente</h1>
           <p className="text-foreground-muted mt-1 text-sm sm:text-base">Gerencie seus leads e oportunidades</p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto" onClick={() => navigate("/novo-lead")}>
-          <Plus className="w-4 h-4" />
-          Novo Lead
-        </Button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button variant="outline" className="gap-2 flex-1 sm:flex-initial" onClick={() => navigate("/leads-qualificados")}>
+            <Target className="w-4 h-4" />
+            Leads Qualificados
+          </Button>
+          <Button className="gap-2 flex-1 sm:flex-initial" onClick={() => navigate("/novo-lead")}>
+            <Plus className="w-4 h-4" />
+            Novo Lead
+          </Button>
+        </div>
       </div>
 
       {/* Leads Table with Stats */}
